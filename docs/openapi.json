@@ -1,0 +1,192 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "FI-Comp Summary Data API",
+        "version": "0.0.1"
+    },
+    "paths": {
+        "/fi-comp-summary/data/": {
+            "get": {
+                "tags": [
+                    "Summary Data"
+                ],
+                "summary": "Return Summary Data",
+                "operationId": "return_summary_data_fi_comp_summary_data__get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "items": {
+                                        "$ref": "#/components/schemas/Summary"
+                                    },
+                                    "type": "array",
+                                    "title": "Response Return Summary Data Fi Comp Summary Data  Get"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/fi-comp-summary/": {
+            "get": {
+                "tags": [
+                    "Summary Data"
+                ],
+                "summary": "Return Summary Html Page",
+                "operationId": "return_summary_html_page_fi_comp_summary__get",
+                "parameters": [
+                    {
+                        "name": "reporter",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "title": "Reporter"
+                        }
+                    },
+                    {
+                        "name": "reportType",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/components/schemas/ReportType"
+                                }
+                            ],
+                            "title": "Reporttype"
+                        }
+                    },
+                    {
+                        "name": "transactionMonth",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "title": "Transactionmonth"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "text/html": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "HTTPValidationError": {
+                "properties": {
+                    "detail": {
+                        "items": {
+                            "$ref": "#/components/schemas/ValidationError"
+                        },
+                        "type": "array",
+                        "title": "Detail"
+                    }
+                },
+                "type": "object",
+                "title": "HTTPValidationError"
+            },
+            "ReportType": {
+                "type": "string",
+                "enum": [
+                    "internationalFundsTransferInstruction",
+                    "crossBorderMovementReport",
+                    "suspiciousMatterReport",
+                    "thresholdTransactionReport"
+                ],
+                "title": "ReportType"
+            },
+            "Summary": {
+                "properties": {
+                    "reportCount": {
+                        "type": "integer",
+                        "title": "Reportcount"
+                    },
+                    "totalAmount": {
+                        "type": "number",
+                        "title": "Totalamount"
+                    },
+                    "reporter": {
+                        "type": "string",
+                        "title": "Reporter"
+                    },
+                    "reportType": {
+                        "$ref": "#/components/schemas/ReportType"
+                    },
+                    "transactionMonth": {
+                        "type": "string",
+                        "format": "date",
+                        "title": "Transactionmonth"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "reportCount",
+                    "totalAmount",
+                    "reporter",
+                    "reportType",
+                    "transactionMonth"
+                ],
+                "title": "Summary"
+            },
+            "ValidationError": {
+                "properties": {
+                    "loc": {
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ]
+                        },
+                        "type": "array",
+                        "title": "Location"
+                    },
+                    "msg": {
+                        "type": "string",
+                        "title": "Message"
+                    },
+                    "type": {
+                        "type": "string",
+                        "title": "Error Type"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "loc",
+                    "msg",
+                    "type"
+                ],
+                "title": "ValidationError"
+            }
+        }
+    }
+}
