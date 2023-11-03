@@ -5,3 +5,9 @@
 - /main.py --> used to generate the openapi.json file.  
 - /data -- > JSON formatted summary data (static asset).
 - /docs --> Swagger page for HTML and JSON endpoints.
+
+
+# Generation of openapi.json
+- install ```python3 -mpip install uvicorn fastapi pydantic```
+- run uvicorn main:app --reload
+- 

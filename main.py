@@ -4,7 +4,9 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from enum import Enum
 
-
+class Scale(str, Enum):
+    log     = "log"
+    linear  = "linear"
 
 class ReportType(str, Enum):
     internationalFundsTransferInstruction = "internationalFundsTransferInstruction"
@@ -46,6 +48,13 @@ def return_summary_data():
         }
     ]
 
+@app.get("/", tags=["Summary Data"])
+def return_summary_data():
+    return {"hi" : "there"}
+
 @app.get("/fi-comp-summary/", tags=["Summary Data"], response_class=HTMLResponse)
-def return_summary_html_page(reporter: str = None, reportType: ReportType = None, transactionMonth : date = None):
+def return_summary_html_page(reporter: str = None,
+                              reportType: ReportType = None,
+                              transactionMonth : date = None,
+                              scale : Scale = None):
     return """"""

@@ -30,6 +30,25 @@
                 }
             }
         },
+        "/": {
+            "get": {
+                "tags": [
+                    "Summary Data"
+                ],
+                "summary": "Return Summary Data",
+                "operationId": "return_summary_data__get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/fi-comp-summary/": {
             "get": {
                 "tags": [
@@ -68,6 +87,19 @@
                             "type": "string",
                             "format": "date",
                             "title": "Transactionmonth"
+                        }
+                    },
+                    {
+                        "name": "scale",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/components/schemas/Scale"
+                                }
+                            ],
+                            "title": "Scale"
                         }
                     }
                 ],
@@ -120,6 +152,14 @@
                     "thresholdTransactionReport"
                 ],
                 "title": "ReportType"
+            },
+            "Scale": {
+                "type": "string",
+                "enum": [
+                    "log",
+                    "linear"
+                ],
+                "title": "Scale"
             },
             "Summary": {
                 "properties": {
