@@ -39,11 +39,13 @@
         #reporterForm button:hover {
             background-color: #45a049;
         }
+
         #container {
-        display: flex;
-        justify-content: center;
-    }
-    #navbar {
+            display: flex;
+            justify-content: center;
+        }
+
+        #navbar {
             background-color: #774caf;
             overflow: hidden;
         }
@@ -62,68 +64,32 @@
             color: white;
         }
 
-    #mainContent {
-        margin-left: 220px;
-    }
+        #mainContent {
+            margin-left: 220px;
+        }
     </style>
 </head>
 
 <body>
-
-
     <div id="navbar">
         <a href="/index.html">Home</a>
         <a href="/pie.html">Pie</a>
         <a href="/table.html">Table</a>
         <a href="/text.html">Text</a>
         <a href="/summary.html">Summary</a>        
-        <a href="/chartjs.html">ChartJS</a>     
+        <a href="/chartjs.html">ChartJS</a>                
     </div>
-    
+
     <div id="mainContent">
         <div id="container">
             <div id="vis"></div>
         </div>
-        <h2 style="text-align:center;">Filter the Chart</h2>
-        <form id="reporterForm">
-            <select id="reporterSelect">
-            </select>
-            <button type="submit">Submit</button>
-            <button type="reset">Reset</button>
-        </form>
     </div>
-
     <script type="text/javascript">
-        fetch('https://www.swarmee.net/fi-comp-summary/data/')
-            .then(response => response.json())
-            .then(data => {
-                const reporters = [...new Set(data.map(item => item.reporter))];
-                const select = document.getElementById('reporterSelect');
-                reporters.forEach(reporter => {
-                    const option = document.createElement('option');
-                    option.value = reporter;
-                    option.text = reporter;
-                    select.add(option);
-                });
-            });
-    </script>
-
-<script type="text/javascript">
-    document.getElementById('reporterForm').addEventListener('reset', function() {
-        window.location.href = window.location.pathname;
-    });
-</script>
-
-    <script type="text/javascript">
-
-        // Get URL query parameters
-        var urlParams = new URLSearchParams(window.location.search);
-        var reporterParam = urlParams.get('reporter');
-
         var spec = {
             "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
             "width": "container",
-            "title": "Report Count by Month",
+            "title": "Report Count by Year",
             "height": 800,
             "description": "A simple bar chart with embedded data.",
             "data": {
@@ -133,53 +99,45 @@
                 }
             },
             "mark": "bar",
-            
+
             "selection": {
-                "zoom": {"type": "interval", "bind": "scales", "zoom": true, "translate": true}
+                "zoom": { "type": "interval", "bind": "scales", "zoom": true, "translate": true }
             },
-            
+            "transform": [
+                {
+                    "timeUnit": "year",
+                    "field": "transactionMonth",
+                    "as": "transactionYear"
+                },
+                {
+                    "aggregate": [{ "op": "sum", "field": "reportCount", "as": "totalReportCount" }],
+                    "groupby": ["transactionYear", "reportType"]
+                }
+            ],
             "encoding": {
                 "x": {
-                    "field": "transactionMonth",
+                    "field": "transactionYear",
                     "type": "temporal",
                     "scale": { "type": "linear" }
                 },
                 "y": {
-                    "field": "reportCount",
+                    "field": "totalReportCount",
                     "type": "quantitative",
                     "scale": { "type": "linear" }
                 },
-
                 "color": {
                     "field": "reportType",
                     "type": "nominal"
                 },
                 "tooltip": [
-                    { "field": "reportCount", "type": "quantitative" },
-                    { "field": "transactionMonth", "type": "temporal" },                    
-                    { "field": "reportType", "type": "nominal" },
-                    { "field": "reporter", "type": "nominal" }                    
+                    { "field": "totalReportCount", "type": "quantitative" },
+                    { "field": "transactionYear", "type": "temporal" },
+                    { "field": "reportType", "type": "nominal" }
                 ],
-                "size": { "value": 10 }
+                "size": { "value": 250 }
             }
         };
-
-        // Add filter if reporterParam is provided
-        if (reporterParam) {
-            spec.transform = [
-                {
-                    "filter": `datum.reporter === '${reporterParam}'`
-                }
-            ];
-        }
-
         vegaEmbed('#vis', spec);
-
-        document.getElementById('reporterForm').addEventListener('submit', function (event) {
-            event.preventDefault();
-            var reporter = document.getElementById('reporterSelect').value;
-            window.location.search = 'reporter=' + reporter;
-        });
     </script>
 </body>
 

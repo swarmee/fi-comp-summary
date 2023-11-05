@@ -6,29 +6,105 @@
     <title>API Data</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        #vis {
+            width: 80%;
+            margin: 20px auto;
+        }
+
+        #reporterForm {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        #reporterSelect {
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+        }
+
+        #reporterForm button {
+            margin-left: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            background-color: #774caf;
+            color: white;
+            cursor: pointer;
+        }
+
+        #reporterForm button:hover {
+            background-color: #45a049;
+        }
+
+        #container {
+            display: flex;
+            justify-content: center;
+        }
+
+        #navbar {
+            background-color: #774caf;
+            overflow: hidden;
+        }
+
+        #navbar a {
+            float: left;
+            display: block;
+            color: #f2f2f2;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+
+        #navbar a:hover {
+            background-color: blueviolet;
+            color: white;
+        }
+
+        #mainContent {
+            margin-left: 220px;
+        }
+    </style>    
 </head>
 
 <body>
-    <h5 style="text-align: center;">Report Count</h5>
-    <div id="main" style="width: 1600px; height: 600px; margin: 0 auto;">
-        <canvas id="myChart"></canvas>
+
+    <div id="navbar">
+        <a href="/index.html">Home</a>
+        <a href="/pie.html">Pie</a>
+        <a href="/table.html">Table</a>
+        <a href="/text.html">Text</a>
+        <a href="/summary.html">Summary</a>
+        <a href="/chartjs.html">ChartJS</a>
     </div>
 
-    <div class="row">
-        <select id="mySelect" class="form-control" multiple
-            style="height: 150px; overflow-y: auto; padding-left: 30px;">
+    <div id="mainContent">
 
-            <!-- Add more options as needed -->
-        </select>
-        <div class="col"></div>
-        <div class="col">
-            <button onclick="changeParams()" class="btn btn-primary">Apply Filter</button>
-            <button onclick="reloadPage()" class="btn btn-primary">Remove Filter</button>
+        <h5 style="text-align: center;">Report Count</h5>
+        <div id="main" style="width: 1600px; height: 600px; margin: 0 auto;">
+            <canvas id="myChart"></canvas>
         </div>
-    </div>
 
-    <h6 style="text-align: left; padding-left: 30px; font-size: 10px;">Query Parameters</h6>
-    <ul id="params" style="font-size: 10px;"></ul>
+        <div class="row">
+            <select id="mySelect" class="form-control" multiple
+                style="height: 150px; overflow-y: auto; padding-left: 30px;">
+
+                <!-- Add more options as needed -->
+            </select>
+            <div class="col"></div>
+            <div class="col">
+                <button onclick="changeParams()" class="btn btn-primary">Apply Filter</button>
+                <button onclick="reloadPage()" class="btn btn-primary">Remove Filter</button>
+            </div>
+        </div>
+
+        <h6 style="text-align: left; padding-left: 30px; font-size: 10px;">Query Parameters</h6>
+        <ul id="params" style="font-size: 10px;"></ul>
+
+    </div>
 
     <script>
 
