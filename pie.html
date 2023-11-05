@@ -8,8 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
     <style>
         #vis {
-            width: 80%;
-            margin: 20px auto;
+            width: 100%;
         }
 
         #reporterForm {
@@ -39,12 +38,18 @@
         #reporterForm button:hover {
             background-color: #45a049;
         }
+
         #container {
-        display: flex;
-        justify-content: center;
-    }
-    #navbar {
-            background-color: #774caf;
+            display: flex;
+            justify-content: center;
+        }
+
+
+        #mainContent {
+            margin-left: 220px;
+        }
+        #navbar {
+            background-color:  blueviolet;
             overflow: hidden;
         }
 
@@ -61,10 +66,6 @@
             background-color: blueviolet;
             color: white;
         }
-
-    #mainContent {
-        margin-left: 220px;
-    }
     </style>
 </head>
 
@@ -77,7 +78,7 @@
         <a href="/vega/table.html">Table</a>
         <a href="/vega/text.html">Text</a>   
     </div>
-    
+
     <div id="mainContent">
         <div id="container">
             <div id="vis"></div>
@@ -112,6 +113,8 @@
     });
 </script>
 
+
+
     <script type="text/javascript">
 
         // Get URL query parameters
@@ -121,46 +124,38 @@
         var spec = {
             "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
             "width": "container",
-            "title": "Report Count by Month",
+            "title": "Report Count by Report Type",
             "height": 800,
-            "description": "A simple bar chart with embedded data.",
+            "description": "A pie chart showing report count by report type.",
             "data": {
                 "url": "https://www.swarmee.net/fi-comp-summary/data/",
                 "format": {
                     "type": "json"
                 }
             },
-            "mark": "bar",
-            
-            "selection": {
-                "zoom": {"type": "interval", "bind": "scales", "zoom": true, "translate": true}
-            },
-            
+            "mark": { "type": "arc", "innerRadius": 250 },
             "encoding": {
-                "x": {
-                    "field": "transactionMonth",
-                    "type": "temporal",
-                    "scale": { "type": "linear" }
-                },
-                "y": {
+                "theta": {
                     "field": "reportCount",
                     "type": "quantitative",
-                    "scale": { "type": "linear" }
+                    "stack": false
                 },
-
                 "color": {
                     "field": "reportType",
-                    "type": "nominal"
+                    "type": "nominal",
+                    "scale": {
+                        "range": ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd"]
+                    }
                 },
                 "tooltip": [
                     { "field": "reportCount", "type": "quantitative" },
-                    { "field": "transactionMonth", "type": "temporal" },                    
                     { "field": "reportType", "type": "nominal" },
                     { "field": "reporter", "type": "nominal" }                    
-                ],
-                "size": { "value": 50 }
+                ]
             }
         };
+
+
 
         // Add filter if reporterParam is provided
         if (reporterParam) {

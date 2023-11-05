@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>API Data</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+
+<body>
+    <h5 style="text-align: center;">Report Count</h5>
+    <div id="main" style="width: 1600px; height: 600px; margin: 0 auto;">
+        <canvas id="myChart"></canvas>
+    </div>
+
+    <div class="row">
+        <select id="mySelect" class="form-control" multiple
+            style="height: 150px; overflow-y: auto; padding-left: 30px;">
+
+            <!-- Add more options as needed -->
+        </select>
+        <div class="col"></div>
+        <div class="col">
+            <button onclick="changeParams()" class="btn btn-primary">Apply Filter</button>
+            <button onclick="reloadPage()" class="btn btn-primary">Remove Filter</button>
+        </div>
+    </div>
+
+    <h6 style="text-align: left; padding-left: 30px; font-size: 10px;">Query Parameters</h6>
+    <ul id="params" style="font-size: 10px;"></ul>
+
+    <script>
+
+        function reloadPage() {
+            window.location.href = window.location.pathname;
+        }
+
+        function changeParams() {
+            var select = document.getElementById('mySelect');
+            var selectedOptions = Array.from(select.selectedOptions).map(option => option.value);
+            var params = selectedOptions.join(',');
+            window.location.href = window.location.pathname + '?reporter=' + params;
+        }
+
+        function getQueryParams() {
+            var params = {};
+            var searchParams = new URLSearchParams(window.location.search);
+            for (var pair of searchParams.entries()) {
+                // If the value contains a comma, split it into an array
+                if (pair[1].includes(',')) {
+                    params[pair[0]] = pair[1].split(',');
+                } else {
+                    params[pair[0]] = pair[1];
+                }
+            }
+            return params;
+        }
+        // Get query parameters
+        var queryParams = getQueryParams();
+        console.log(queryParams);
+
+        function getScale() {
+            // if query parameter scale is not present set the scale paraemter to linear else set to log
+            if (queryParams.scale == null || queryParams.scale == 'linear') {
+                return 'linear';
+                // else if
+            } else if (queryParams.scale == 'log') {
+                return 'logarithmic';
+            } else {
+                return 'linear';
+            }
+        }
+        var scale = getScale();
+        console.log(queryParams);
+
+        // Function to get json data from api and set as variable data
+        const data = fetch('https://www.swarmee.net/fi-comp-summary/data/')
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                // create a list of the unique values for reporter
+                var reporter_list = [];
+                data.forEach(function (item) {
+                    if (!reporter_list.includes(item.reporter)) {
+                        reporter_list.push(item.reporter);
+                    }
+                });
+                console.log(reporter_list);
+
+                var select = document.getElementById('mySelect');
+
+                reporter_list.forEach(function (reporter) {
+                    var option = document.createElement('option');
+                    option.value = reporter;
+                    option.textContent = reporter;
+                    select.appendChild(option);
+                });
+
+                // Loop through query parameters and filter data
+                //                var filteredData = data;
+                // Filter data by the query parameters
+                let filteredData = data.filter(item => {
+                    // Assume that the item should be included
+                    let include = true;
+                    // Iterate over the query parameters
+                    Object.keys(queryParams).forEach(key => {
+                        // Only process keys if in the following values reporter, transactionMonth, reportType
+                        if (!['reporter', 'transactionMonth', 'reportType'].includes(key)) {
+                            return;
+                        }
+                        // Filter data by the query parameters if not list
+                        if (!Array.isArray(queryParams[key])) {
+                            include = include && item[key] === queryParams[key];
+                        } else {
+                            // Filter data by the query parameters if list
+                            include = include && queryParams[key].includes(item[key]);
+                        }
+                    });
+
+                    return include;
+                });
+                console.log(filteredData);
+
+                // Function to summarize filteredData
+                summaried_dict = filteredData.reduce((summary, entry) => {
+                    if (summary[entry.transactionMonth + entry.reportType]) {
+                        summary[entry.transactionMonth + entry.reportType].reportCount += entry.reportCount
+                    } else {
+                        summary[entry.transactionMonth + entry.reportType] = {
+                            transactionMonth: entry.transactionMonth,
+                            reportType: entry.reportType,
+                            reportCount: entry.reportCount
+                        }
+                    }
+                    return summary
+                }, {})
+                console.log(summaried_dict)
+
+
+                let summaried_list = Object.values(summaried_dict);
+                console.log(summaried_list)
+
+                // Display list of json objects with date, type and count in chart format
+                // with date on the x axis, count on the y axis and type as the label
+
+
+
+                // Group data by reportType
+                var groupedData = {};
+                summaried_list.forEach(function (item) {
+                    if (!groupedData[item.reportType]) {
+                        groupedData[item.reportType] = [];
+                    }
+                    groupedData[item.reportType].push({ x: item.transactionMonth, y: item.reportCount });
+                });
+
+                // Create a dataset for each reportType
+                var datasets = [];
+                for (var reportType in groupedData) {
+                    datasets.push({
+                        label: reportType,
+                        data: groupedData[reportType],
+                        //                        borderColor: 'blue', // Change as needed
+                        fill: true
+                    });
+                }
+
+
+
+
+                // Assign colors to datasets
+                //var colors = ['red', 'blue', 'green', 'yellow', 'purple']; // Add more colors as needed
+                //for (var i = 0; i < datasets.length; i++) {
+                //    datasets[i].backgroundColor = colors[i % colors.length];
+                //}
+
+                // Display chart
+                var ctx = document.getElementById('myChart').getContext('2d');
+                var chart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        datasets: datasets
+                    },
+                    options: {
+                        title: {
+                            display: true,
+                            text: 'Your Title Here'
+                        },
+                        scales: {
+                            y: {
+                                stacked: true,
+                                type: scale,
+                            },
+                            x: {
+                                stacked: true,
+                                ticks: {
+                                    fontSize: 4// Change this to your desired font size
+                                }
+                            }
+                        },
+                        legend: {
+                            labels: {
+                                // This more specific font property overrides the global property
+                                font: {
+                                    size: 10
+                                }
+                            }
+
+
+                        },
+                        plugins: {
+                            datalabels: {
+                                font: {
+                                    size: 6 // Change this to your desired font size
+                                }
+                            }
+                        },
+                        animation: {
+                            duration: 3000 // 2000ms = 2s
+                        }
+                    }
+                });
+
+
+            })
+
+
+        window.onload = function () {
+            var params = new URLSearchParams(window.location.search);
+            var list = document.getElementById('params');
+
+            params.forEach(function (value, key) {
+                var li = document.createElement('li');
+                li.textContent = key + ': ' + value;
+                list.appendChild(li);
+            });
+
+
+        };    
+    </script>
+</body>
+
+</html>

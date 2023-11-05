@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Pivot Table</title>
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.js"></script>
+    <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="https://cdn.plot.ly/plotly-basic-latest.min.js"></script>
+    <link rel="stylesheet" type="text/css"
+        href="https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.13.0/pivot.min.css">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.22.0/pivot.min.js"></script>
+    <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.22.0/plotly_renderers.min.js"></script>
+
+
+
+    <style>
+        #vis {
+            width: 80%;
+            margin: 20px auto;
+        }
+
+        #reporterForm {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        #reporterSelect {
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+        }
+
+        #reporterForm button {
+            margin-left: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            background-color: #774caf;
+            color: white;
+            cursor: pointer;
+        }
+
+        #reporterForm button:hover {
+            background-color: #45a049;
+        }
+
+        #container {
+            display: flex;
+            justify-content: center;
+        }
+
+        #navPanel {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 200px;
+            height: 100%;
+            background-color: #f8f9fa;
+            padding: 20px;
+            overflow: auto;
+        }
+
+        #navPanel a {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        #mainContent {
+            margin-left: 220px;
+        }
+
+        #navbar {
+            background-color: darkcyan;
+            overflow: hidden;
+        }
+
+        #navbar a {
+            float: left;
+            display: block;
+            color: #f2f2f2;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+
+        #navbar a:hover {
+            background-color: blueviolet;
+            color: white;
+        }
+        
+    </style>
+</head>
+
+<body>
+    <div id="navbar">
+        <a href="/vega/index.html">Home</a>
+        <a href="/vega/pie.html">Pie</a>
+        <a href="/vega/table.html">Table</a>
+        <a href="/vega/text.html">Text</a>   
+    </div>
+
+
+
+    <body>
+
+        <div id="mainContent">
+            <div id="container">
+                <div id="output" style="margin: 10px;">
+                </div>
+            </div>
+            
+        </div>
+
+        <script type="text/javascript">//<![CDATA[
+            fetch('https://www.swarmee.net/fi-comp-summary/data/') // Replace with your API URL
+                .then(response => response.json())
+                .then(data => {
+                    $("#output").pivotUI(data, {
+                        rows: ["transactionMonth"], // Replace with your row field
+                        cols: ["reportType"], // Replace with your column field
+                        vals: ["reportCount"],
+                        aggregatorName: "Sum",
+                        rendererName: "Table",
+                        renderers: $.extend(
+                            $.pivotUtilities.renderers,
+                            $.pivotUtilities.plotly_renderers
+                        )
+                    });
+                });
+            //]]></script>
+
+    </body>
+
+
+
+</body>
+
+</html>

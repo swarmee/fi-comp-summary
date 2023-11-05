@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vega Lite Bubble Chart</title>
+    <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+</head>
+<body>
+    <div id="vis"></div>
+    <script type="text/javascript">
+        var spec = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "data": {"url": "https://www.swarmee.net/fi-comp-summary/data/"},
+            "mark": "circle",
+            "encoding": {
+                "x": {"field": "reportType", "type": "nominal"},
+                "y": {"field": "reportCount", "type": "quantitative"},
+                "size": {"field": "reportCount", "type": "quantitative"},
+                "color": {"field": "reportType", "type": "nominal"}
+            },
+            "selection": {
+                "zoom": {"type": "interval", "bind": "scales", "zoom": true, "translate": true}
+            },
+            "width": 500,
+            "height": 500
+        };
+        vegaEmbed('#vis', spec);
+    </script>
+</body>
+</html>

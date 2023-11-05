@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Vega-Lite Chart</title>
+    <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+    <style>
+        #vis {
+            width: 80%;
+            margin: 20px auto;
+        }
+
+        #reporterForm {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        #reporterSelect {
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+        }
+
+        #reporterForm button {
+            margin-left: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            background-color: #774caf;
+            color: white;
+            cursor: pointer;
+        }
+
+        #reporterForm button:hover {
+            background-color: #45a049;
+        }
+
+        #container {
+            display: flex;
+            justify-content: center;
+        }
+
+        #navbar {
+            background-color: darkcyan;
+            overflow: hidden;
+        }
+
+        #navbar a {
+            float: left;
+            display: block;
+            color: #f2f2f2;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+
+        #navbar a:hover {
+            background-color: blueviolet;
+            color: white;
+        }
+
+        #mainContent {
+            margin-left: 220px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="navbar">
+        <a href="/vega/index.html">Home</a>
+        <a href="/vega/pie.html">Pie</a>
+        <a href="/vega/table.html">Table</a>
+        <a href="/vega/text.html">Text</a>        
+    </div>
+
+    <div id="mainContent">
+        <div id="container">
+            <div id="vis"></div>
+        </div>
+    </div>
+    <script type="text/javascript">
+
+        var spec = {
+            "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+            "width": "container",
+            "title": "Total Report Counts",
+            "height": 800,
+            "description": "A simple bar chart with embedded data.",
+            "data": {
+                "url": "https://www.swarmee.net/fi-comp-summary/data/",
+                "format": {
+                    "type": "json"
+                }
+            },
+
+
+            "transform": [{
+                "aggregate": [{ "op": "sum", "field": "reportCount", "as": "totalReportCount" }],
+                "groupby": ["reportType"]
+            },
+            {
+                "calculate": "datum.reportType + ': ' + format(datum.totalReportCount, ',.0f')",
+                "as": "reportTypeAndCount"
+            }],
+
+            "mark": "text",
+            "encoding": {
+                "text": { "field": "reportTypeAndCount", "type": "nominal" },
+                "y": { "field": "reportType", "type": "nominal", "title": null, "axis": null },
+                "size": { "value": 50 } // Set the text size as needed
+            },
+            "config": {
+                "view": {
+                    "stroke": null
+                }
+            }
+
+
+        };
+        vegaEmbed('#vis', spec);
+    </script>
+</body>
+
+</html>
